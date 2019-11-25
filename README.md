@@ -106,14 +106,30 @@ Running via Spring preloader in process 990
 ```ruby
 class UsersController < ApplicationController
 	def new
+		@user = User.new
 	end
 
 	def create
+		@user = User.new(user_params)
+    if @user.save
+      redirect_to @user
+    else
+      render 'new'
+    end    
 	end
 
 	def show
+		@user = User.find(params[:id])
 	end
+
+	private
+
+    def user_params
+        params.require(:user).permit(:name, :email)
+    end
+
 end
+
 ```
 ```erb
 #app/views/users/new.html.erb
@@ -132,12 +148,123 @@ end
 
 6. Create a simple sign in function that doesn’t require a password – just enter the ID or name of the user you’d like to “sign in” as and click Okay. You can then save the ID of the “signed in” user in either the session hash or the cookies hash and retrieve it when necessary. It may be helpful to always display the name of the “signed in” user at the top.
 
+```sh
+$ rails generate migration add_remember_token_to_users remember_token:string
+Running via Spring preloader in process 5942
+      invoke  active_record
+      create    db/migrate/20191125211218_add_remember_token_to_users.rb
 
+$ rails generate controller Sessions
+Running via Spring preloader in process 4380
+      create  app/controllers/sessions_controller.rb
+      invoke  erb
+      create    app/views/sessions
+      invoke  test_unit
+      create    test/controllers/sessions_controller_test.rb
+      invoke  helper
+      create    app/helpers/sessions_helper.rb
+      invoke    test_unit
+      invoke  assets
+      invoke    scss
+      create      app/assets/stylesheets/sessions.scss
 
+```
 
-
+```ruby
+#/db/migrate/20191125211218_add_remember_token_to_users.rb
+class AddRememberTokenToUsers < ActiveRecord::Migration[6.0]
+  def change
+    add_column :users, :remember_token, :string
+    add_index  :users, :remember_token
+  end
+end
+```
 
 ```sh
+$ rails db:migrate
+== 20191125211218 AddRememberTokenToUsers: migrating ==========================
+-- add_column(:users, :remember_token, :string)
+   -> 0.0015s
+-- add_index(:users, :remember_token)
+   -> 0.0010s
+== 20191125211218 AddRememberTokenToUsers: migrated (0.0026s) =================
+
+```
+
+```ruby
+# app/models/user.rb
+class User < ApplicationRecord
+  .
+  .
+  .
+
+# Returns a random token.
+def User.new_token
+  SecureRandom.urlsafe_base64
+end
+
+def User.digest(token)
+  Digest::SHA1.hexdigest(token.to_s)
+end
+
+private
+
+  def create_remember_token
+    self.remember_token = User.digest(User.new_token)
+  end
+
+end
+```
+
+```ruby
+class SessionsController < ApplicationController
+	def new
+	end
+	
+	def create 
+		user = User.find_by(email: params[:session][:email])
+		if user
+			log_in user
+			redirect_to user
+		else 
+			flash.now[:danger] = 'Invalid email'
+			render 'new'
+		end 
+	end 
+	
+	def destroy
+		log_out
+		if logged_in?
+			redirect_to root_path
+		end
+	end
+
+end
+```
+
+
+```erb
+<h1>Sign In</h1>
+
+<%= bootstrap_form_for(:session, url: sessions_path, layout: :horizontal) do |f| %>
+
+  <%= f.text_field :email %>   
+  <%= f.form_group do %>
+    <%= f.submit "Sign in", class: "btn btn-large btn-primary" %>
+  <% end %>
+
+  <%= f.form_group do %>
+    <p>New user? <%= link_to "Sign up now!", signup_path %></p>
+  <% end %>
+
+<% end %>
+```
+
+```sh
+It work!
+```
+
+
 0. Gemfile Setup
 
 gem 'bootstrap_form', '~> 4.3'
