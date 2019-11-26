@@ -556,13 +556,12 @@ def create
 a. Name
 b. Email
 
-# Event (sign up)
-a. Title
+# Event DB model (sign up)
+a. Name
 b. Location
 c. Description
 d. Date
-e. Foreign Key - User ID
-f. attend
+
 
 # Attendance
 a. Location
@@ -1096,10 +1095,10 @@ Basic Events
 
 1.Build and migrate your Event model without any foreign keys. Don’t worry about validations. Include the event’s date in your model but don’t worry about doing anything special with it yet.
 ```sh
-$ rails generate model event location:string date:date
+$ rails generate model Event name:string location:string description:text date:time
 
       invoke  active_record
-      create    db/migrate/20191124230955_create_events.rb
+      create    db/migrate/20191126171538_create_events.rb
       create    app/models/event.rb
       invoke    test_unit
       create      test/models/event_test.rb
@@ -1107,63 +1106,68 @@ $ rails generate model event location:string date:date
 
 $ rails db:migrate
 
-== 20191124230955 CreateEvents: migrating =====================================
+== 20191126171538 CreateEvents: migrating =====================================
 -- create_table(:events)
-   -> 0.0033s
-== 20191124230955 CreateEvents: migrated (0.0041s) ============================
-
+   -> 0.0037s
+== 20191126171538 CreateEvents: migrated (0.0042s) ============================
 ```
-
 
 2. Add the association between the event creator (a User) and the event. Call this user the “creator”. Add the foreign key to the Events model as necessary. You’ll need to specify your association properties carefully (e.g. :foreign_key, :class_name, and :source).
 ```sh
+$ rails generate migration add_creator_to_event
+      invoke  active_record
+      create    db/migrate/20191125220747_add_creator_to_event.rb
+```
+
+```ruby
+# /migrate/[timestamp]_add_creator_to_event.rb
+
+class AddCreatorToEvents < ActiveRecord::Migration[6.0]
+  def change
+    add_column :events, :creator_id, :integer
+  end
+end
+```
+
+```ruby
 /app/models/event.rb
 
-class Event < ActiveRecord::Base
-  belongs_to :creator, :class_name => "User"
+class Event < ApplicationRecord
+  belongs_to :user, foreign_key: :creator_id
 
+  validates :name, presence: true
+  validates :description, presence: true
+  validates :location, presence: true
+  validates :time, presence: true
+
+
+  def creator
+    User.find_by(id: self.creator_id).name
+  end
 end
 ```
 
 3. Modify your User’s Show page to list all the events a user has created.
-```sh
+```erb
 /app/views/users/show.html.erb
 
 <h1><%= @user.name %>
 <small><%= @user.email %></small></h1>
 
-<% if current_user?(@user) %>
 <div class="text-center">
 <%= link_to "Create New Event", new_event_path, class: "btn btn-success" %> 
 </div>
-<% end %>
+<%= render 'shared/table', object: @user.events, as: 'events' %>
+````
 
-
-<% if @upcoming_events.any? %>
-<h2>Upcoming</h2>
-<%= render 'shared/table', object: @upcoming_events %>
-<% end %>
-
-<% if @previous_events.any? %>
-
-<h2>Attended</h2>
-<%= render 'shared/table', object: @previous_events %>
-
-<% end %>
-
-<% if @user.events.any? %>
-<h2>Created by <%= @user.name%></h2>
-
-<%= render 'shared/table', object: @user.events %>
-<% end %>
-
-app/views/shared/_table.html.erb
+```erb
+# app/views/shared/_table.html.erb
 
 <table class="table table-condensed">   
   <thead>
     <tr>
       <td class="col-sm-2">Date</td>
-      <td class="col-sm-4">Title</td>
+      <td class="col-sm-4">Name</td>
       <td class="col-sm-3">Location</td>
       <td class="col-sm-2">Host</td>
       <td class="col-sm-1">Attend</td>
@@ -1172,59 +1176,19 @@ app/views/shared/_table.html.erb
 
   <% object.each do |event| %>
   <tr>
-    <td><%= event.date %></td>
-    <td><%= link_to event.title, event_path(event) %></td>
+    <td><%= event.time %></td>
+    <td><%= link_to event.name, event_path(event) %></td>
     <td><%= event.location %></td>
-    <td><%= link_to event.creator.name, user_path(event.creator) %></td>
-    <td class="text-center"><%= link_to event.attendees.count, event_path(event) %></td>
+    <td><%= link_to event.creator, user_path(event.creator) %></td>
   </tr>
   <% end %>   
 </table>
-
-/app/views/events/_attend.html.erb
-
-<%= form_for(current_user.invites.build(attended_event_id: @event.id)) do |f| %>
-  <div><%= f.hidden_field :attended_event_id %></div>
-  <%= f.submit "Attend", class: "btn btn-large btn-primary" %>
-<% end %>
-
-private_events/app/views/events/_attend_form.html.erb
-
-<div id="attend_form">
-  <% if current_user.attending?(@event) %> 
-    <%= render 'cancel' %>
-  <% else %>
-    <%= render 'attend' %>
-  <% end %>
-</div>
-
-/app/views/shared/_user_home.html.erb
-
-<h1><%= @user.name %>
-<small><%= @user.email %></small></h1>
-
-<%= link_to "Create New Event", new_event_path, class: "btn btn-lg btn-success" %> 
-
-<% if @upcoming_events.any? %>
-<h2>Upcoming:</h2>
-<%= render 'shared/table', object: @upcoming_events %>
-<% end %>
-
-<% if @previous_events.any? %>
-<h2>You Attended:</h2>
-<%= render 'shared/table', object: @previous_events %>
-<% end %>
-
-<% if @user.events.any? %>
-<h2>Your Created Events</h2>
-<%= render 'shared/table', object: @user.events %>
-<% end %>
 
 ```
 
 4. Create an EventsController and corresponding routes to allow you to create an event (don’t worry about editing or deleting events), show a single event, and list all events.
 ```sh
-$ rails generate controller events
+$ rails generate controller Events
 
       create  app/controllers/events_controller.rb
       invoke  erb
@@ -1237,7 +1201,9 @@ $ rails generate controller events
       invoke  assets
       invoke    scss
       create      app/assets/stylesheets/events.scss
+```
 
+```ruby
 /app/controllers/events_controller.rb 
 
 class EventsController < ApplicationController
@@ -1249,11 +1215,12 @@ class EventsController < ApplicationController
   end
 
   def show
-    @event = Event.find(params[:id])
+  end
+
+  def index
   end
 
 end
-
 
 /config/routes.rb
 
@@ -1261,6 +1228,10 @@ PrivateEvents::Application.routes.draw do
 .
 .
   resources :events, only: [:new, :create, :show, :index]
+  get     '/events/new',   to: 'events#new'
+  post    '/events/new',   to: 'events#create'
+  get     '/event',        to: 'events#show'
+  get     '/events',       to: 'events#index'
 .
 .
 
@@ -1269,15 +1240,19 @@ PrivateEvents::Application.routes.draw do
 
 5. The form for creating an event should just contain a :description field.
 ```sh
+This was done in point no. 2.
+```
+
+```erb
 /app/views/events/new.html.erb
 
 <h1>Create Event</h1>
 
 <%= bootstrap_form_for(@event) do |f| %>
-  <%= f.text_field :title %>
+  <%= f.text_field :name %>
   <%= f.text_field :location %>
   <%= f.text_area :description %>
-  <%= f.date_field :date%>
+  <%= f.date_field :time%>
   <%= f.submit "Create Event",  class: "btn btn-lg btn-primary"  %>
 <% end %>
 <br>
@@ -1285,114 +1260,69 @@ PrivateEvents::Application.routes.draw do
 ```
 
 6. The #create action should use the #build method of the association to create the new event with the user’s ID prepopulated. You could easily also just use Event’s ::new method and manually enter the ID but… don’t.
-```sh
+```ruby
 /app/controllers/events_controller.rb 
 
 class EventsController < ApplicationController
+  before_action :log_in_user, only: [:create]
+
   def new
     @event = current_user.events.build
   end
 
   def create
-    @event = curreant_user.events.build(event_params)
+    @event = current_user.events.build(event_params)
     if @event.save
-      redirect_to event_path(@event)
+      redirect_to event_path(id: @event.id)
     else
       render 'new'
     end
+  end
 
+  def index
+    @events = Event.all
   end
 
   def show
+    @user = current_user
     @event = Event.find(params[:id])
   end
 
   private
-    def event_params
-      params.require(:event).permit(:title, :location, :description, :date)
+
+  def event_params
+    params.require(:event)
+          .permit(:name, :description, :location, :time)
+  end
+
+  def log_in_user
+    unless signed_in?
+      flash[:danger] = "Kindly log in to create an event"
+      redirect_to login_path
     end
+  end
 end
 
 ```
 
 7. The event’s Show page should just display the creator of the event for now.
-```sh
+```erb
 /app/views/events/show.html.erb
 
-<h1><%= @event.title %></h1>
+<h1><%= @event.name %></h1>
 
-
-<% if logged_in? %>
+<% if signed_in? %>
   <div class="text-center"><%= render 'attend_form' %></div>
 <% end %>
 
 <p><b>Location: </b><%= @event.location %></p> 
-<p><b>Host: </b><%= @event.creator.name %></p>
+<p><b>Host: </b><%= @event.creator %></p>
 
 <p><%= @event.description %></p>
-
-</br>
-
-<b>Who's Going:</b>
-
-<ol>
-<% @event.attendees.each do |attendee| %>
-   <li><%= link_to attendee.name, attendee %></li>
-<% end %>
-</ol>
-
-app/helpers/events_helper.rb
-
-module EventsHelper
-  def host?(user)
-    current_user == user
-  end
-end
-
-$ rails generate migration add_creator_to_events
-
-      invoke  active_record
-      create    db/migrate/20191125001447_add_creator_to_events.rb
-
-/db/migrate/[date]_add_creator_to_events.rb 
-
-class AddCreatorToEvents < ActiveRecord::Migration
-  def change
-    add_column :events, :creator_id, :integer
-    add_index  :events, :creator_id
-  end
-end
-
-$ rails generate migration add_desc_to_event
-
-      invoke  active_record
-      create    db/migrate/20191125001639_add_desc_to_event.rb
-
-/db/migrate/[date]_add_desc_to_events.rb 
-
-class AddDescToEvents < ActiveRecord::Migration
-  def change
-    add_column :events, :description, :text
-  end
-end
-
-$ rails db:migrate
-
-== 20191125001447 AddCreatorToEvents: migrating ===============================
--- add_column(:events, :creator_id, :integer)
-   -> 0.0028s
--- add_index(:events, :creator_id)
-   -> 0.0011s
-== 20191125001447 AddCreatorToEvents: migrated (0.0054s) ======================
-
-== 20191125001639 AddDescToEvent: migrating ===================================
--- add_column(:events, :description, :text)
-   -> 0.0039s
-== 20191125001639 AddDescToEvent: migrated (0.0046s) ==========================
 ```
 
 8. Create the Event Index page to display all events.
-```sh
+```erb
 /app/views/events/index.html.erb
 
 <h1>Browse All Events</h1>
@@ -1642,3 +1572,6 @@ development
 
 feature-branch
 
+Kill puma server
+ps ax to list
+kill -9 <pid>

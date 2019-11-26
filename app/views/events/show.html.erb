@@ -1,0 +1,25 @@
+<h1><%= @event.name %></h1>
+<%
+=begin %>
+<% if signed_in? %>
+  <div class="text-center"><%= render 'attend_form' %></div>
+<% end %>
+<%
+=end %>
+<p><b>Location: </b><%= @event.location %></p> 
+<p><b>Host: </b><%= @event.creator %></p>
+
+<p><%= @event.description %></p>
+
+</br>
+<%
+=begin %>
+<b>Who's Going:</b>
+
+<ol>
+<% @event.attendees.each do |attendee| %>
+   <li><%= link_to attendee.name, attendee %></li>
+<% end %>
+</ol>
+<%
+=end %>

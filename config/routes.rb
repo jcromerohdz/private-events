@@ -8,4 +8,9 @@ Rails.application.routes.draw do
   post   '/signin',   to: 'sessions#create'
   delete '/signout',  to: 'sessions#destroy'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :events, only: [:new, :create, :show, :index]
+  get     '/events/new',   to: 'events#new'
+  post    '/events/new',   to: 'events#create'
+  # get     '/event',        to: 'events#show'
+  get     '/events',       to: 'events#index'
 end

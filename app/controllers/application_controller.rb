@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
     @current_user ||= User.find_by(remember_token: remember_token)
   end
 
-   def signged_in?
+   def signed_in?
     !current_user.nil?
   end
 
