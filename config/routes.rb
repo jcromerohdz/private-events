@@ -4,7 +4,10 @@ Rails.application.routes.draw do
   get 'static_pages/about'
   resources :users, only: [:new, :create, :show, :index]
   # get   '/users',   to: 'users#index'
-  get  '/signup',  to: 'users#new'
+  get     '/profile',      to: 'users#show'
+  get     '/signup',       to: 'users#new'
+  post    '/signup',       to: 'users#create'
+  
   resources :sessions, only: [:new, :create, :destroy]
   get    '/signin',   to: 'sessions#new'
   post   '/signin',   to: 'sessions#create'
