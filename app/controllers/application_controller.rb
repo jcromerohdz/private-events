@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
     remember_token = User.new_token
     cookies.permanent[:remember_token] = remember_token
     user.update_attribute(:remember_token, User.digest(remember_token))
-    self.current_user = user
+    @current_user = user
   end
 
   def current_user=(user)
@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
     current_user.update_attribute(:remember_token,
                                   User.digest(User.new_token))
     cookies.delete(:remember_token)
-    self.current_user = nil
+    @current_user = nil
   end
 
   def current_user?(user)
