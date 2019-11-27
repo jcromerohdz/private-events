@@ -9,17 +9,13 @@
     </tr>
   </thead>
 
-  <% object.each do |event| %>
+  <% events.each do |event| %>
   <tr>
     <td><%= event.time %></td>
     <td><%= link_to event.name, event_path(event) %></td>
     <td><%= event.location %></td>
     <td><%= link_to event.creator, user_path(event.creator) %></td>
-    <%
-=begin %>
     <td class="text-center"><%= link_to event.attendees.count, event_path(event) %></td>
-    <%
-=end %>
   </tr>
   <% end %>   
 </table>

@@ -1,6 +1,5 @@
 <% provide(:title, 'Event List') %>
-<%
-=begin %>
+
 <h2 class="centered-text">Browse All Events</h2>
 <% if @events.any? %>
 <%= render partial: 'upcoming_past',
@@ -8,9 +7,9 @@
 <% else %>
 <h3 class="centered-text">No events created yet.</h3>
 <% end %>
-<%
-=end %>
 
+<%
+=begin %>
 <h2 class="centered-text">Event List</h2>
 
   <% if @events.any? %>
@@ -22,3 +21,5 @@
 
     <h3 class="centered-text">No events created yet.</h3>
   <% end %>
+  <%
+=end %>

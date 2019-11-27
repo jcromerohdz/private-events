@@ -1,0 +1,21 @@
+<% events.each do |event| %>
+  <div class="event-container">
+    <a class="event-link" href="/event?id=<%= event.id %>">
+      <section>
+        <div class="content">
+          <h4>
+            <%= event.name %></h4>
+          <p>
+            <%= event.description %></p>
+          <p>
+            Location:
+            <%= event.location %></p>
+        </div>
+        <div class="time">
+          Time:
+          <%= event.time.strftime("%d/%m/%Y") %>
+        </div>
+      </section>
+    </a>
+  </div>
+<% end %>

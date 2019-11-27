@@ -14,8 +14,15 @@ class UsersController < ApplicationController
 	end
 
 	def show
-		@user = User.find(params[:id])
-	end
+		if signed_in?
+      @user = User.find_by(id: session[:user_id])
+      @user_events = @user.events
+      @upcoming_events = @user.attended_events.upcoming
+      @past_events = @user.attended_events.past
+    else
+      redirect_to signin_path
+    end
+  end
 
 	def going
     @event = Event.find(params[:id])
@@ -30,6 +37,10 @@ class UsersController < ApplicationController
     @user = current_user
     @user.attended_events.delete(@event)
     redirect_to event_path(id: @event.id)
+  end
+
+  def index
+    @users = User.paginate(page: params[:page])
   end
 
 	private

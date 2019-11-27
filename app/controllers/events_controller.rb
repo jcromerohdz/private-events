@@ -2,7 +2,12 @@ class EventsController < ApplicationController
   before_action :log_in_user, only: [:create]
 
   def new
-    @event = current_user.events.build
+    if signed_in?
+      @event = current_user.events.build
+    else
+      flash[:danger] = "Kindly log in to create an event"
+      redirect_to signin_path
+    end
   end
 
   def create
@@ -27,7 +32,6 @@ class EventsController < ApplicationController
   end
 
   def signed_in?
-    byebug
     !current_user.nil?
   end
 
