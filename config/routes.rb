@@ -13,4 +13,7 @@ Rails.application.routes.draw do
   post    '/events/new',   to: 'events#create'
   # get     '/event',        to: 'events#show'
   get     '/events',       to: 'events#index'
+
+  patch   '/attend',       to: 'users#going'
+  delete  '/not_attend',   to: 'users#not_going' 
 end

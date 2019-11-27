@@ -16,14 +16,19 @@ class EventsController < ApplicationController
 
   def index
     @events = Event.all
-    # @past_events = @events.past
-    # @upcoming_events = @events.upcoming
+    @past_events = @events.past
+    @upcoming_events = @events.upcoming
   end
 
   def show
     @user = current_user
     @event = Event.find(params[:id])
-    # @is_upcoming = Event.upcoming.include?(@event)
+    @is_upcoming = Event.upcoming.include?(@event)
+  end
+
+  def signed_in?
+    byebug
+    !current_user.nil?
   end
 
   private

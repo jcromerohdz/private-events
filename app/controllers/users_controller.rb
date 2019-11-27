@@ -17,6 +17,21 @@ class UsersController < ApplicationController
 		@user = User.find(params[:id])
 	end
 
+	def going
+    @event = Event.find(params[:id])
+    @user = current_user
+    @user.attended_events << @event
+    @user.save
+    redirect_to event_path(id: @event.id)
+  end
+
+  def not_going
+    @event = Event.find(params[:id])
+    @user = current_user
+    @user.attended_events.delete(@event)
+    redirect_to event_path(id: @event.id)
+  end
+
 	private
 
     def user_params

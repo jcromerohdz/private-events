@@ -1338,6 +1338,199 @@ end
 
 Event Attendance
 1. Now add the association between the event attendee (also a User) and the event. Call this user the “attendee”. Call the event the “attended_event”. You’ll again need to juggle specially named foreign keys and classes and sources.
+
+
+``` sh
+$ rails generate migration Attendances
+Running via Spring preloader in process 12251
+      invoke  active_record
+      create    db/migrate/20191126210650_attendances.rb
+$ rails db:migrate
+== 20191126210650 Attendances: migrating ======================================
+-- create_table(:attendances)
+   -> 0.0017s
+== 20191126210650 Attendances: migrated (0.0018s) =============================
+```
+```ruby
+#/db/migrate/20191126210650_attendances.rb
+class Attendances < ActiveRecord::Migration[6.0]
+  def change
+    create_table :attendances do |t|
+      t.integer :attendee_id
+      t.integer :attended_event_id
+
+      t.timestamps
+    end
+  end
+end
+```
+```sh
+$ rails generate model Attendance
+Running via Spring preloader in process 12585
+      invoke  active_record
+      create    db/migrate/20191126210941_create_attendances.rb
+      create    app/models/attendance.rb
+      invoke    test_unit
+      create      test/models/attendance_test.rb
+      create      test/fixtures/attendances.yml
+```
+```ruby
+#/app/models/attendance.rb
+class Attendance < ApplicationRecord
+	belongs_to :attendee, class_name: 'User'
+  belongs_to :attended_event, class_name: 'Event'
+end
+```
+
+2. Create and migrate all necessary tables and foreign keys. This will require a “through” table since an Event can have many Attendees and a single User (Attendee) can attend many Events… many-to-many.
+
+```ruby
+#/app/models/event.rb
+class Event < ApplicationRecord
+  belongs_to :user, foreign_key: :creator_id
+  has_many :people_attending, foreign_key: 'attended_event_id',
+                              class_name: 'Attendance'
+  has_many :attendees, through: :people_attending
+
+  validates :name, presence: true
+  validates :description, presence: true
+  validates :location, presence: true
+  validates :time, presence: true
+
+  def creator
+    User.find_by(id: self.creator_id).name
+  end
+end
+```
+```ruby
+class User < ApplicationRecord
+  has_many :events, foreign_key: :creator_id
+  has_many :attended, foreign_key: 'attendee_id', class_name: 'Attendance'
+  has_many :attended_events, through: :attended
+  .
+  .
+  .
+end
+```
+
+3. Now make an Event’s Show page display a list of attendees.
+```ruby
+#/app/controllers/events_controller.rb
+class EventsController < ApplicationController
+.
+.
+.
+def show
+  @user = current_user
+  @event = Event.find(params[:id])
+  @is_upcoming = Event.upcoming.include?(@event)
+end
+ .
+ .
+ .
+end
+```
+```erb
+#/views/events/index.html.erb
+<% provide(:title, 'Event List') %>
+<h2 class="centered-text">Event List</h2>
+
+  <% if @events.any? %>
+
+    <%= render partial: 'upcoming_past',
+             locals: { upcoming: @upcoming_events, past: @past_events } %>
+
+  <% else %>
+
+    <h3 class="centered-text">No events created yet.</h3>
+  <% end %>
+```
+```erb
+#/views/events/_upcoming_past.html.erb
+<% if upcoming.any? || past.any? %>
+
+  <h3 class="centered-text">Attending events:</h3>
+
+  <div class="event-row">
+
+    <div class="event-wrapper">
+
+      <% if upcoming.any? %>
+
+        <h4 class="centered-text">
+          Upcoming Events (<%= upcoming.count %>)
+        </h4>
+
+        <div class="attending-events-container">
+
+          <%= render partial: 'shared/table', object: upcoming, as: 'events' %>
+
+        </div>
+
+      <% else %>
+        <h4 class="centered-text">No upcoming events</h4>
+      <% end %>
+
+    </div>
+
+    <div class="event-wrapper">
+
+      <% if past.any? %>
+
+        <h4 class="centered-text">
+          Past Events (<%= past.count %>)
+        </h4>
+
+        <div class="attending-events-container">
+
+          <%= render partial: 'shared/table', object: upcoming, as: 'events' %>
+
+        </div>
+
+      <% else %>
+        <h4 class="centered-text">No past events</h4>
+      <% end %>
+
+    </div>
+
+  </div>
+
+<% else %>
+  <h3 class="centered-text">No events attended or to attend yet.</h3>
+<% end %>
+```
+```erb
+#/views/shared/_table.html.erb
+<table class="table table-condensed">   
+  <thead>
+    <tr>
+      <td class="col-sm-2">Date</td>
+      <td class="col-sm-4">Name</td>
+      <td class="col-sm-3">Location</td>
+      <td class="col-sm-2">Host</td>
+      <td class="col-sm-1">Attend</td>
+    </tr>
+  </thead>
+
+  <% events.each do |event| %>
+  <tr>
+    <td><%= event.time %></td>
+    <td><%= link_to event.name, event_path(event) %></td>
+    <td><%= event.location %></td>
+    <td><%= link_to event.creator, user_path(event.creator) %></td>
+    <%
+=begin %>
+    <td class="text-center"><%= link_to event.attendees.count, event_path(event) %></td>
+    <%
+=end %>
+  </tr>
+  <% end %>   
+</table>
+```
+
+
+
+
 ```sh
 $ rails generate controller invites_controller
       create  app/controllers/invites_controller.rb

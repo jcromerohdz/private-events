@@ -1,19 +1,44 @@
 <h1><%= @event.name %></h1>
+
 <%
-=begin %>
-<% if signed_in? %>
+=begin%>
+ <% if signed_in? %>
   <div class="text-center"><%= render 'attend_form' %></div>
-<% end %>
+<% end %> 
 <%
-=end %>
+=end%>
+
 <p><b>Location: </b><%= @event.location %></p> 
 <p><b>Host: </b><%= @event.creator %></p>
 
 <p><%= @event.description %></p>
 
 </br>
-<%
-=begin %>
+
+<% if @user && @is_upcoming %>
+
+      <% unless @user.attended_events.include?(@event) %>
+
+        <%= link_to "Attend to event", attend_path(id: @event.id), method: :patch, class: "btn btn-primary" %>
+
+      <% else %>
+
+        <%= link_to "Not going anymore", not_attend_path(id: @event.id), method: :delete, class: "btn btn-danger" %>
+
+      <% end %>
+    <% end %>
+
+    <h3>Attendees List</h3>
+    <% if @event.attendees.any? %>
+      <ol>
+        <% @event.attendees.each do |attendee| %>
+          <li><%= attendee.name %></li>
+        <% end %>
+      </ol>
+    <% else %>
+      <p>No attendees for this event yet</p>
+    <% end %>
+
 <b>Who's Going:</b>
 
 <ol>
@@ -21,5 +46,3 @@
    <li><%= link_to attendee.name, attendee %></li>
 <% end %>
 </ol>
-<%
-=end %>
