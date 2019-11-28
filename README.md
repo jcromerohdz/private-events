@@ -1295,7 +1295,7 @@ end
 ```
 2. Create and migrate all necessary tables and foreign keys. This will require a “through” table since an Event can have many Attendees and a single User (Attendee) can attend many Events… many-to-many.
 :class_name, and :source).
-```sh
+```ruby
 /app/models/event.rb
 
 class Event < ActiveRecord::Base
@@ -1361,7 +1361,7 @@ end
 ```
 
 6. Modify the Event Index page to list all events, separated into Past and Upcoming categories. Use a class method on Event (e.g. Event.past).
-```sh
+```erb
 /app/views/events/index.html.erb
 
 <h1>Browse All Events</h1>
@@ -1376,7 +1376,7 @@ end
 ```
 
 7. Refactor the “upcoming” and “past” methods into simple scopes (remember scopes??).
-```sh
+```ruby
 /app/models/event.rb
 
 class Event < ActiveRecord::Base
