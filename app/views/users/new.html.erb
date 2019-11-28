@@ -1,11 +1,10 @@
 <h1>Sign Up</h1>
-
 <%=  bootstrap_form_for @user, layout: :horizontal, label_col: "col-sm-2", control_col: "col-sm-10" do |f| %>
   <%= f.text_field :name %>
-  <%= f.text_field :email %>
-
+  <%= f.text_field :email %>  
   <%= f.form_group do %>
-      <%= f.submit "Create my account",  class: "btn btn-large btn-primary" %>
-  <% end %>
-
+	  <div class="buttonme">
+      <%= f.submit "Create my account", class: "btn btn-large btn-primary" %>
+	  <% end %>
+	</div>
 <% end %>

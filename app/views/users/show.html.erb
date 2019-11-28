@@ -1,63 +1,12 @@
-<%
-=begin %> 
-
-<h1><%= @user.name %>
-<small><%= @user.email %></small></h1>
-
-
-<% if @user_events.any? %>
-
-<div class="text-center">
-<%= link_to "Create New Event", new_event_path, class: "btn btn-success" %> 
-</div>
-<%= render 'shared/table', object: @user.events, as: 'events' %>
-
-
-<h1><%= @user.name %>
-<small><%= @user.email %></small></h1>
-
-<% if @current_user %>
-<div class="text-center">
-<%= link_to "Create New Event", new_event_path, class: "btn btn-success" %> 
-</div>
-<% end %>
-
-
-<% if @upcoming_events.any? %>
-<h2>Upcoming</h2>
-<%= render 'shared/table', object: @upcoming_events %>
-<% end %>
-
-<% if @previous_events %>
-
-<h2>Attended</h2>
-<%= render 'shared/table', object: @previous_events %>
-
-<% end %>
-
-<% if @user.events.any? %>
-<h2>Created by <%= @user.name%></h2>
-
-<%= render 'shared/table', object: @user.events %>
-<% end %>
-<%
-=end %>
-
 <h2 class="centered-text">Welcome
   <%= @user.name %></h2>
-
 <% if @user_events.any? %>
   <h3 class="centered-text" >Events created by you:</h3>
-
   <div class="attending-events-container">
-
     <%= render partial: "events/event", object: @user.events, as: 'events' %>
-
   </div>
-
 <% else %>
   <h3 class="centered-text">You didn't create any events yet.</h3>
 <% end %>
-
 <%= render partial: 'events/upcoming_past',
            locals: { upcoming: @upcoming_events, past: @past_events } %>

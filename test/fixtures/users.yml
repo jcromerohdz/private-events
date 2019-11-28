@@ -5,6 +5,6 @@ one:
   email: MyString@email.com
 
 two:
-  name: MyString2
-  email: MyString2@email.com
+  name: MyString1
+  email: MyString1@email.com
 

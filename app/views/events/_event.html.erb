@@ -1,21 +1,21 @@
-<% events.each do |event| %>
-  <div class="event-container">
-    <a class="event-link" href="/event?id=<%= event.id %>">
-      <section>
-        <div class="content">
-          <h4>
-            <%= event.name %></h4>
-          <p>
-            <%= event.description %></p>
-          <p>
-            Location:
-            <%= event.location %></p>
-        </div>
-        <div class="time">
-          Time:
-          <%= event.time.strftime("%d/%m/%Y") %>
-        </div>
-      </section>
-    </a>
-  </div>
-<% end %>
+<table class="table table-condensed">   
+  <thead>
+    <tr>
+      <td class="col-sm-2">Date</td>
+      <td class="col-sm-4">Name</td>
+      <td class="col-sm-3">Location</td>
+      <td class="col-sm-2">Host</td>
+      <td class="col-sm-1">Attend</td>
+    </tr>
+  </thead>
+
+  <% events.each do |event| %>
+  <tr>
+    <td><%= event.time.strftime("%d/%m/%Y")  %></td>
+    <td><%= link_to event.name, event_path(event) %></td>
+    <td><%= event.location %></td>
+    <td><%= link_to event.creator, user_path(event.creator) %></td>
+    <td class="text-center"><%= event.attendees.count %></td>
+  </tr>
+  <% end %>   
+</table>

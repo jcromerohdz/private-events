@@ -29,8 +29,26 @@ $gray-medium-light: #eaeaea;
   }
 }
 
-/* typography */
+/* Main message and sign up button */
+.jumbotron {
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+  .btn {
+    padding: 14px 24px;
+    font-size: 21px;
+  }
+}
 
+.buttonme {
+  text-align: center;
+  border-bottom: 1px;
+  .btn {
+    padding: 14px 24px;
+    font-size: 21px;
+  }
+}
+
+/* typography */
 
 h1, h2, h3, h4, h5, h6 {
   line-height: 1;
@@ -50,6 +68,19 @@ h2 {
   text-align: center;
   font-weight: normal;
   color: $light-gray;
+}
+
+h3 {
+  letter-spacing: -1px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: normal;
+  color: Black;
+}
+
+h4 {
+  color: Black;
+  font-weight: bold;
 }
 
 p {
@@ -104,51 +135,19 @@ footer {
   }
 }
 
-/* miscellaneous */
-
-.debug_dump {
-  clear: both;
-  float: left;
-  width: 100%;
-  margin-top: 45px;
-  @include box_sizing;
-}
-
-/* sidebar */
-
-aside {
-  section.user_info {
-    margin-top: 20px;
-  }
-  section {
+.users {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  li {
+    overflow: auto;
+    text-align: center;
     padding: 10px 0;
-    margin-top: 20px;
-    &:first-child {
-      border: 0;
-      padding-top: 0;
-    }
-    span {
-      display: block;
-      margin-bottom: 3px;
-      line-height: 1;
-    }
-    h1 {
-      font-size: 1.4em;
-      text-align: left;
-      letter-spacing: -1px;
-      margin-bottom: 3px;
-      margin-top: 0px;
+    border-top: 1px solid #e8e8e8;
+    &:last-child {
+      border-bottom: 1px solid #e8e8e8;
     }
   }
-}
-
-.gravatar {
-  float: left;
-  margin-right: 10px;
-}
-
-.gravatar_edit {
-  margin-top: 15px;
 }
 
 /* forms */
@@ -185,69 +184,5 @@ input {
   span {
     margin-left: 20px;
     font-weight: normal;
-  }
-}
-
-#session_remember_me {
-  width: auto;
-  margin-left: 0;
-}
-
-/* Users index */
-
-.users {
-  list-style: none;
-  margin: 0;
-  li {
-    overflow: auto;
-    padding: 10px 0;
-    border-bottom: 1px solid $gray-lighter;
-  }
-}
-
-/* microposts */
-
-.microposts {
-  list-style: none;
-  padding: 0;
-  li {
-    padding: 10px 0;
-    border-top: 1px solid #e8e8e8;
-  }
-  .user {
-    margin-top: 5em;
-    padding-top: 0;
-  }
-  .content {
-    display: block;
-    margin-left: 60px;
-    img {
-      display: block;
-      padding: 5px 0;
-    }
-  }
-  .timestamp {
-    color: $gray-light;
-    display: block;
-    margin-left: 60px;
-  }
-  .gravatar {
-    float: left;
-    margin-right: 10px;
-    margin-top: 5px;
-  }
-}
-
-aside {
-  textarea {
-    height: 100px;
-    margin-bottom: 5px;
-  }
-}
-
-span.picture {
-  margin-top: 10px;
-  input {
-    border: 0;
   }
 }
