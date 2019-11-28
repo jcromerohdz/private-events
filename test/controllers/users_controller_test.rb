@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
@@ -19,20 +21,18 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get show user" do
+  test 'should get show user' do
     get users_url(@user)
     assert_response :success
   end
 
-  test "should get signin user" do
+  test 'should get signin user' do
     get signin_url
     assert_response :success
   end
 
-  test "should get signup user" do
+  test 'should get signup user' do
     get signup_url
     assert_response :success
   end
-
-  
 end
