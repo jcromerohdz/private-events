@@ -12,7 +12,6 @@ class Event < ApplicationRecord
   validates :location, presence: true
   validates :time, presence: true
 
-
   def creator
     User.find_by(id: self.creator_id).name
   end
