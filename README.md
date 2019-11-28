@@ -275,7 +275,7 @@ end
 ```
 
 0.4 Bootstrap
-```sh
+```css
 @import "bootstrap-sprockets";
 @import "bootstrap";
 
