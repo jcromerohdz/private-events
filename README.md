@@ -1,27 +1,63 @@
-# README
+# Microverse Project Title - Associations [Collaborative Project]
+Ruby on Rails
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+### Introduction.
+In this project, you will build an application named Private Events and that behaves similar to Eventbrite. The main goal is to put in practice the main concepts of Associations in rails.
 
-Things you may want to cover:
+Full task description: https://www.theodinproject.com/courses/ruby-on-rails/lessons/associations.
 
-* Ruby version
+### Microverse Adjustments
 
-* System dependencies
+You should do the “Project 1: Ruby on Rails Tutorial” individually, and then you will complete the project Private Events together with your partner. Once you are finished with this project, continue working together with your coding partner on the next project. You must still remain in a video call with your partner during your independent work.
 
-* Configuration
+Please submit only “Project 2: Private Events”.
 
-* Database creation
+### Project specific
 
-* Database initialization
+Make sure that all foreign keys have corresponding indexes in Database, as it will make your database performance better.
+Remember about tests in your code
+Refresher: Test Driven Development
+Add unit tests for models associations and validations (use Rspec hint)
+Add integrations tests for authentication and events managment (use Rspec and Capybara hint)
+Hint: Setting up Rspec and Capybara
 
-* How to run the test suite
+###  Ruby version
 
-* Services (job queues, cache servers, search engines, etc.)
+rbenv 2.6.5
 
-* Deployment instructions
 
-* ...
+###  System dependencies
+
+Rails 6.0.1
+
+Yarn 1.19.1
+
+Ubuntu 18.04 & below
+
+###  Database creation
+sqlite3
+
+###  Database initialization
+
+###  Services (job queues, cache servers, search engines, etc.)
+
+###  Deployment instructions
+
+1. Open the terminal.
+
+2. Enter git clone https://github.com/jcromerohdz/private-events.git
+
+3. Navigate to the cloned repository.
+
+4. Migrate database with this command "rails db:migrate"
+
+5. Populate user database with this command "rails db:seed"
+
+6. Run "bundle install" command to install all relevant gems
+
+7. Run "rails server" command and open browser using "localhost:3000"
+
+8. Sign in with default login (email: example@odin.org, password: foobar)
 
 crh
 1. Model the data for your application, including the necessary tables.
@@ -1768,3 +1804,31 @@ feature-branch
 Kill puma server
 ps ax to list
 kill -9 <pid>
+
+To purge and reseed database
+
+rake db:drop
+rake db:create
+rake db:schema:load
+rake db:seed 
+
+and then you run:
+
+rake db:migrate
+rake db:test:prepare
+rake db:prepare
+
+### Source
+
+https://www.theodinproject.com/courses/ruby-on-rails/lessons/associations
+
+### Github Repo
+
+https://github.com/jcromerohdz/private-events
+s
+### Authors
+
+* [@Christian](https://github.com/jcromerohdz)
+
+* [@Gerald](https://github.com/geraldgsh)
+

@@ -29,8 +29,26 @@ $gray-medium-light: #eaeaea;
   }
 }
 
-/* typography */
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+  .btn {
+    padding: 14px 24px;
+    font-size: 21px;
+  }
+}
 
+.buttonme {
+  text-align: center;
+  border-bottom: 1px;
+  .btn {
+    padding: 14px 24px;
+    font-size: 21px;
+  }
+}
+
+/* typography */
 
 h1, h2, h3, h4, h5, h6 {
   line-height: 1;
@@ -50,6 +68,19 @@ h2 {
   text-align: center;
   font-weight: normal;
   color: $light-gray;
+}
+
+h3 {
+  letter-spacing: -1px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: normal;
+  color: Black;
+}
+
+h4 {
+  color: Black;
+  font-weight: bold;
 }
 
 p {
@@ -100,6 +131,21 @@ footer {
     li {
       float: left;
       margin-left: 15px;
+    }
+  }
+}
+
+.users {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  li {
+    overflow: auto;
+    text-align: center;
+    padding: 10px 0;
+    border-top: 1px solid #e8e8e8;
+    &:last-child {
+      border-bottom: 1px solid #e8e8e8;
     }
   }
 }
