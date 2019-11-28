@@ -735,6 +735,7 @@ end
 <% end %>
 ```
 
+```ruby
 # /config/routes.rb
 
 PrivateEvents::Application.routes.draw do
@@ -745,6 +746,7 @@ PrivateEvents::Application.routes.draw do
 .
 .
 end
+```
 
 6. Create a simple sign in function that doesn’t require a password – just enter the ID or name of the user you’d like to “sign in” as and click Okay. You can then save the ID of the “signed in” user in either the session hash or the cookies hash and retrieve it when necessary. It may be helpful to always display the name of the “signed in” user at the top.
 
@@ -1294,7 +1296,6 @@ end
 <% end %>
 ```
 2. Create and migrate all necessary tables and foreign keys. This will require a “through” table since an Event can have many Attendees and a single User (Attendee) can attend many Events… many-to-many.
-:class_name, and :source).
 ```ruby
 /app/models/event.rb
 
@@ -1356,8 +1357,6 @@ end
   <% end %>
 </ul>
 <%= will_paginate %>
-
-
 ```
 
 6. Modify the Event Index page to list all events, separated into Past and Upcoming categories. Use a class method on Event (e.g. Event.past).
