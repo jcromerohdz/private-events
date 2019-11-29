@@ -501,13 +501,6 @@ group :development, :test do
   gem 'rspec-rails', '~> 4.0'
 end
 
-# Or, run against the master branch
-# (requires master-branch versions of all related RSpec libraries)
-group :development, :test do
-  %w[rspec-core rspec-expectations rspec-mocks rspec-rails rspec-support].each do |lib|
-    gem lib, :git => "https://github.com/rspec/#{lib}.git", :branch => 'master'
-  end
-end
 ```
 
 Then, in your project directory:
@@ -597,6 +590,11 @@ RSpec.describe User, type: :model do
   end
 end
 ```
+# spec/models/event_spec.rb
+```ruby
+
+```
+
 
 Create boilerplate specs with rails generate after coding is complete
 ```sh
