@@ -6,8 +6,8 @@ class Event < ApplicationRecord
                               class_name: 'Attendance'
   has_many :attendees, through: :people_attending
 
-  scope :upcoming, -> { where('time >= ?', Time.now) }
-  scope :past, -> { where('time < ?', Time.now) }
+  scope :upcoming, -> { where('time >= ?', Time.zone.now) }
+  scope :past, -> { where('time < ?', Time.zone.now) }
 
   validates :name, presence: true
   validates :description, presence: true

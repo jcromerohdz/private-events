@@ -10,5 +10,7 @@ class StaticPagesController < ApplicationController
     @past_events = @user.attended_events.past
   end
 
-  def about; end
+  def about
+  end
+  
 end

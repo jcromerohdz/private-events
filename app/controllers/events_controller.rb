@@ -45,9 +45,9 @@ class EventsController < ApplicationController
   end
 
   def log_in_user
-    return unless signed_in?
+    return if signed_in?
 
-    flash[:danger] = 'Kindly log in to create an event'
-    redirect_to login_path
+    flash[:danger] = 'Kindly log in'
+    redirect_to signin_path
   end
 end
