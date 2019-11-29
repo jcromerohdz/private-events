@@ -5,17 +5,19 @@ RSpec.feature "Authentications", type: :feature do
     @user = User.create(name: 'creator', email: 'test@test.com')
   end
 
-  it 'signs me in' do
+  it 'Sign In' do
     visit '/signin'
     fill_in 'session[email]', with: 'test@test.com'
     click_button 'Sign in'
     expect(page).to have_content 'Welcome creator'
   end
-
-  # it 'Sign out' do
-  #   visit '/signout'
-  #   click_button 'Sign out'
-  #   expect(page).to have_content 'Welcome to Eventblitz'
-  # end
   
+  it 'Sign Out' do
+    visit '/signin'
+    fill_in 'session[email]', with: 'test@test.com'
+    click_button 'Sign in'
+    click_on 'Log Out'
+    expect(page).to have_content 'Welcome to Eventblitz'
+  end
+
 end

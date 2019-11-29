@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Event, type: :model do
-  describe 'All credetial are provide' do
+  describe 'All credetial are provided' do
     it 'should have creator' do
       user = User.create(name: 'test', email: 'test@test.com')
       event = user.events.build(name: 'Comic con', location: 'texas', description: 'event description', time: '2019-12-26', creator_id: user.id)

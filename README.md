@@ -622,6 +622,237 @@ $ bundle exec rspec spec/controllers/accounts_controller_spec.rb:8
 $ bundle exec rspec --help
 ```
 
+# Authentication Feature RSPEC Test
+```ruby
+# spec/features/authentication_spec.rb
+require 'rails_helper'
+
+RSpec.feature "Authentications", type: :feature do
+  before :each do
+    @user = User.create(name: 'creator', email: 'test@test.com')
+  end
+
+  it 'Sign In' do
+    visit '/signin'
+    fill_in 'session[email]', with: 'test@test.com'
+    click_button 'Sign in'
+    expect(page).to have_content 'Welcome creator'
+  end
+  
+  it 'Sign Out' do
+    visit '/signin'
+    fill_in 'session[email]', with: 'test@test.com'
+    click_button 'Sign in'
+    click_on 'Log Out'
+    expect(page).to have_content 'Welcome to Eventblitz'
+  end
+
+end
+```
+
+# Event_management Feature RSPEC Test
+```ruby
+require 'rails_helper'
+
+RSpec.feature "EventsManagements", type: :feature do
+  before :each do
+    @user = User.create(name: 'creator', email: 'test@test.com')
+  end
+
+  it 'Event Creation' do
+    visit '/signin'
+    fill_in 'session[email]', with: 'test@test.com'
+    click_button 'Sign in'
+    expect(page).to have_content 'Welcome creator'
+    visit root_path
+    expect(page).to have_content 'Welcome to Eventblitz'
+    click_link 'Create an event'
+    expect(page).to have_content 'Create Event'
+    fill_in "event[name]", with: 'Test'
+    fill_in 'event[location]', with: 'germ'
+    fill_in 'event[description]', with: ' some weird convention'
+    fill_in 'event[time]', with: '2019-12-26'
+    click_button 'Create Event'
+    expect(page).to have_content 'Test'
+  end
+
+  it 'Attending functionality' do
+    visit '/signin'
+    fill_in 'session[email]', with: 'test@test.com'
+    click_button 'Sign in'
+    expect(page).to have_content 'Welcome creator'
+    visit root_path
+    expect(page).to have_content 'Welcome to Eventblitz'
+    click_link 'Create an event'
+    expect(page).to have_content 'Create Event'
+    fill_in "event[name]", with: 'Test'
+    fill_in 'event[location]', with: 'germ'
+    fill_in 'event[description]', with: ' some weird convention'
+    fill_in 'event[time]', with: '2019-12-26'
+    click_button 'Create Event'
+    expect(page).to have_content 'Test'
+    click_link "Attend to event"
+    page.find('ol', text: 'creator')
+  end
+
+  it 'Attending functionality' do
+    visit '/signin'
+    fill_in 'session[email]', with: 'test@test.com'
+    click_button 'Sign in'
+    expect(page).to have_content 'Welcome creator'
+    visit root_path
+    expect(page).to have_content 'Welcome to Eventblitz'
+    click_link 'Create an event'
+    expect(page).to have_content 'Create Event'
+    fill_in "event[name]", with: 'Test'
+    fill_in 'event[location]', with: 'germ'
+    fill_in 'event[description]', with: ' some weird convention'
+    fill_in 'event[time]', with: '2019-12-26'
+    click_button 'Create Event'
+    expect(page).to have_content 'Test'
+    click_link "Attend to event"
+    page.find('ol', text: 'creator')
+  end
+
+  it 'Not attending functionality' do
+    visit '/signin'
+    fill_in 'session[email]', with: 'test@test.com'
+    click_button 'Sign in'
+    expect(page).to have_content 'Welcome creator'
+    visit root_path
+    expect(page).to have_content 'Welcome to Eventblitz'
+    click_link 'Create an event'
+    expect(page).to have_content 'Create Event'
+    fill_in "event[name]", with: 'Test'
+    fill_in 'event[location]', with: 'germ'
+    fill_in 'event[description]', with: ' some weird convention'
+    fill_in 'event[time]', with: '2019-12-26'
+    click_button 'Create Event'
+    expect(page).to have_content 'Test'
+    click_link "Attend to event"
+    page.find('ol', text: 'creator')
+    click_link "Not going anymore"
+    expect(page).to have_content "No attendees for this event yet"
+  end
+
+end
+```
+
+# User model RSPEC test
+```ruby
+# spec/models/user_spec
+
+require 'rails_helper'
+
+RSpec.describe User, type: :model do
+  before :each do
+    User.create(name: 'test', email: 'test@test.com')
+  end
+  describe '#name' do
+    before :each do
+      User.create(name: 'test', email: 'test@test.com')
+    end
+    it 'doesnt take user without the name' do
+      user = User.new
+      user.name = nil
+      user.valid?
+      expect(user.errors[:name]).to include("can't be blank")
+
+      user.name = 'test'
+      user.valid?
+      expect(user.errors[:name]).to_not include("can't be blank")
+    end    
+  end
+
+  describe '#email' do
+    it 'validates for presence of email adress' do
+      user = User.new
+      user.name = 'test3334'
+      user.email = ''
+      user.valid?
+      expect(user.errors[:email]).to include('is invalid')
+
+      user.email = 'test3334@gmail.com'
+      user.valid?
+      expect(user.errors[:email]).to_not include('is invalid')
+    end
+
+    it 'validates for format of email adress' do
+      user = User.new
+      user.name = 'test3334'
+      user.email = 'test@test..com'
+      user.valid?
+      expect(user.errors[:email]).to include('is invalid')
+
+      user.email = 'test3334@gmail.com'
+      user.valid?
+      expect(user.errors[:email]).to_not include('is invalid')
+    end
+  end
+
+  describe '#attended_events' do
+    it 'should be able to list attendees' do
+      creator = User.create(name: 'creator', email: 'creator@email.com')
+      attendee = User.create(name: 'attendee', email: 'attendee@email.com')
+      event = Event.create(name: 'Comic con', location: 'texas', description: 'event description', time: '2019-12-26', creator_id: creator.id)
+      event.attendees << attendee
+      expect(User.last.attended_events.first).to eql(event)
+    end
+  end
+
+  describe '#events' do
+    it 'should be able to list attendees' do
+      creator = User.create(name: 'creator', email: 'creator@email.com')
+      attendee = User.create(name: 'attendee', email: 'attendee@email.com')
+      event = Event.create(name: 'Comic con', location: 'texas', description: 'event description', time: '2020-08-26', creator_id: creator.id)
+      event.attendees << attendee
+      expect(User.find_by_email('creator@email.com').events.first).to eql(event)
+    end
+  end
+end
+
+```
+
+# Event Model RSPEC test
+```ruby
+require 'rails_helper'
+
+RSpec.describe Event, type: :model do
+  describe 'All credetial are provide' do
+    it 'should have creator' do
+      user = User.create(name: 'test', email: 'test@test.com')
+      event = user.events.build(name: 'Comic con', location: 'texas', description: 'event description', time: '2019-12-26', creator_id: user.id)
+      event.valid?
+      expect(event).to be_valid  
+    end
+  end
+
+  describe 'no date provided' do
+    it 'is not valid ' do
+      user = User.create(name: 'test', email: 'test@test.com')
+      event = Event.new(name: 'Comic con', location: 'texas', description: 'event description', time: nil, creator_id: user.id)
+      expect(event.valid?).to be false
+    end
+  end
+
+  describe 'no creator id provided' do
+    it 'is not valid' do
+      user = User.create(name: 'test', email: 'test@test.com')
+      event = Event.new(name: 'Comic con', location: 'texas', description: 'event description', time: '2019-12-26', creator_id: nil)
+      expect(event.valid?).to be false
+    end
+  end
+
+  context 'no description provided' do
+    it 'is not valid' do
+      user = User.create(name: 'test', email: 'test@test.com')
+      event = Event.new(name: 'Comic con', location: nil , description: 'event description', time: '2019-12-26', creator_id: user.id)
+      expect(event.valid?).to be false
+    end
+  end
+end
+```
+
 ### Setup and Sign In
 
 1. Model the data for your application, including the necessary tables.
