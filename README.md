@@ -34,6 +34,7 @@ Yarn 1.19.1
 Ubuntu 18.04 & below
 
 ###  Database creation
+
 sqlite3
 
 ###  Database initialization
@@ -491,6 +492,138 @@ def create
 
 ```
 
+0.6 Rspec test Setup
+
+Ensure rspec-rails present in both the :development and :test groups of your app’s Gemfile:
+```sh
+# Run against the latest stable release
+group :development, :test do
+  gem 'rspec-rails', '~> 4.0'
+end
+
+# Or, run against the master branch
+# (requires master-branch versions of all related RSpec libraries)
+group :development, :test do
+  %w[rspec-core rspec-expectations rspec-mocks rspec-rails rspec-support].each do |lib|
+    gem lib, :git => "https://github.com/rspec/#{lib}.git", :branch => 'master'
+  end
+end
+```
+
+Then, in your project directory:
+```sh
+# Download and install
+$ bundle update
+$ bundle install
+$ bundle update rspec-rails
+
+# Generate boilerplate configuration files
+# (check the comments in each generated file for more information)
+$ rails generate rspec:install
+      create  .rspec
+      create  spec
+      create  spec/spec_helper.rb
+      create  spec/rails_helper.rb
+```
+
+# spec/models/user_spec.rb
+```sh
+require 'rails_helper'
+
+RSpec.describe User, type: :model do
+  before :each do
+    User.create(name: 'test', email: 'test@test.com')
+  end
+  describe '#name' do
+    before :each do
+      User.create(name: 'test', email: 'test@test.com')
+    end
+    it 'doesnt take user without the name' do
+      user = User.new
+      user.name = nil
+      user.valid?
+      expect(user.errors[:name]).to include("can't be blank")
+
+      user.name = 'test'
+      user.valid?
+      expect(user.errors[:name]).to_not include("can't be blank")
+    end    
+  end
+
+  describe '#email' do
+    it 'validates for presence of email adress' do
+      user = User.new
+      user.name = 'test3334'
+      user.email = ''
+      user.valid?
+      expect(user.errors[:email]).to include('is invalid')
+
+      user.email = 'test3334@gmail.com'
+      user.valid?
+      expect(user.errors[:email]).to_not include('is invalid')
+    end
+
+    it 'validates for format of email adress' do
+      user = User.new
+      user.name = 'test3334'
+      user.email = 'test@test..com'
+      user.valid?
+      expect(user.errors[:email]).to include('is invalid')
+
+      user.email = 'test3334@gmail.com'
+      user.valid?
+      expect(user.errors[:email]).to_not include('is invalid')
+    end
+  end
+
+  describe '#attended_events' do
+    it 'should be able to list attendees' do
+      creator = User.create(name: 'creator', email: 'creator@email.com')
+      attendee = User.create(name: 'attendee', email: 'attendee@email.com')
+      event = Event.create(name: 'Comic con', location: 'texas', description: 'event description', time: '2019-12-26', creator_id: creator.id)
+      event.attendees << attendee
+      expect(User.last.attended_events.first).to eql(event)
+    end
+  end
+
+  describe '#events' do
+    it 'should be able to list attendees' do
+      creator = User.create(name: 'creator', email: 'creator@email.com')
+      attendee = User.create(name: 'attendee', email: 'attendee@email.com')
+      event = Event.create(name: 'Comic con', location: 'texas', description: 'event description', time: '2020-08-26', creator_id: creator.id)
+      event.attendees << attendee
+      expect(User.find_by_email('creator@email.com').events.first).to eql(event)
+    end
+  end
+end
+```
+
+Create boilerplate specs with rails generate after coding is complete
+```sh
+# RSpec also provides its own spec file generators
+$ rails generate rspec:model user
+      create  spec/models/user_spec.rb
+
+# List all RSpec generators
+$ rails generate --help | grep rspec
+
+Running specs
+# Default: Run all spec files (i.e., those matching spec/**/*_spec.rb)
+$ bundle exec rspec
+
+# Run all spec files in a single directory (recursively)
+$ bundle exec rspec spec/models
+
+# Run a single spec file
+$ bundle exec rspec spec/controllers/accounts_controller_spec.rb
+
+# Run a single example from a spec file (by line number)
+$ bundle exec rspec spec/controllers/accounts_controller_spec.rb:8
+
+# See all options for running specs
+$ bundle exec rspec --help
+```
+
 ### Setup and Sign In
 
 1. Model the data for your application, including the necessary tables.
@@ -702,21 +835,48 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      sign_in @user
       redirect_to @user
     else
       render 'new'
-    end    
+    end
   end
 
   def show
-    @user = User.find(params[:id])
+    if signed_in?
+      @user = User.find_by(id: session[:user_id])
+      @user_events = @user.events
+      @upcoming_events = @user.attended_events.upcoming
+      @past_events = @user.attended_events.past
+    else
+      redirect_to signin_path
+    end
+  end
+
+  def going
+    @event = Event.find(params[:id])
+    @user = current_user
+    @user.attended_events << @event
+    @user.save
+    redirect_to event_path(id: @event.id)
+  end
+
+  def not_going
+    @event = Event.find(params[:id])
+    @user = current_user
+    @user.attended_events.delete(@event)
+    redirect_to event_path(id: @event.id)
+  end
+
+  def index
+    @users = User.paginate(page: params[:page])
   end
 
   private
 
-    def user_params
-      params.require(:user).permit(:name, :email)
-    end
+  def user_params
+    params.require(:user).permit(:name, :email)
+  end
 end
 
 ```
@@ -1421,6 +1581,31 @@ end
 .
 .
 
+```
+
+```ruby
+# app/controllers/application_controller.rb
+
+class ApplicationController < ActionController::Base
+  helper_method :current_user, :signed_in?
+
+  def sign_in(user)
+    session[:user_id] = user.id
+  end
+
+  def current_user
+    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+  end
+
+  def signed_in?
+    !current_user.nil?
+  end
+
+  def sign_out
+    session.delete(:user_id) if signed_in?
+    @current_user = nil
+  end
+end
 ```
 
 ## Setup seed database to populate events database
