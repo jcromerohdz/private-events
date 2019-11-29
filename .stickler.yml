@@ -10,3 +10,4 @@ files:
     - "Rakefile"
     - "bower_components/*"
     - "node_modules/*"
+    - "spec/*"
