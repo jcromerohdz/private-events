@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Event, type: :model do
@@ -6,7 +8,7 @@ RSpec.describe Event, type: :model do
       user = User.create(name: 'test', email: 'test@test.com')
       event = user.events.build(name: 'Comic con', location: 'texas', description: 'event description', time: '2019-12-26', creator_id: user.id)
       event.valid?
-      expect(event).to be_valid  
+      expect(event).to be_valid
     end
   end
 
@@ -29,7 +31,7 @@ RSpec.describe Event, type: :model do
   context 'no description provided' do
     it 'is not valid' do
       user = User.create(name: 'test', email: 'test@test.com')
-      event = Event.new(name: 'Comic con', location: nil , description: 'event description', time: '2019-12-26', creator_id: user.id)
+      event = Event.new(name: 'Comic con', location: nil, description: 'event description', time: '2019-12-26', creator_id: user.id)
       expect(event.valid?).to be false
     end
   end

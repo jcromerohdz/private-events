@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
@@ -17,7 +19,7 @@ RSpec.describe User, type: :model do
       user.name = 'test'
       user.valid?
       expect(user.errors[:name]).to_not include("can't be blank")
-    end    
+    end
   end
 
   describe '#email' do
