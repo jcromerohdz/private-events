@@ -1,0 +1,11 @@
+<% provide(:title, 'Create Event') %>
+<h1>Create Event</h1>
+
+<%= bootstrap_form_for(@event) do |f| %>
+  <%= f.text_field :name %>
+  <%= f.text_field :location %>
+  <%= f.text_area :description %>
+  <%= f.date_field :time%>
+  <%= f.submit "Create Event",  class: "btn btn-lg btn-primary"  %>
+<% end %>
+<br>

@@ -1,0 +1,31 @@
+<% if upcoming.any? || past.any? %>
+  <h3 class="centered-text">Attending events:</h3>
+  <div class="event-row">
+    <div class="event-wrapper">
+      <% if upcoming.any? %>
+        <h4 class="centered-text">
+          Upcoming Events (<%= upcoming.count %>)
+        </h4>
+        <div class="attending-events-container">
+          <%= render partial: 'events/event', object: upcoming, as: 'events' %>
+        </div>
+      <% else %>
+        <h4 class="centered-text">No upcoming events</h4>
+      <% end %>
+    </div>
+    <div class="event-wrapper">
+      <% if past.any? %>
+        <h4 class="centered-text">
+          Past Events (<%= past.count %>)
+        </h4>
+        <div class="attending-events-container">
+          <%= render partial: 'events/event', object: past, as: 'events' %>
+        </div>
+      <% else %>
+        <h4 class="centered-text">No past events</h4>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <h3 class="centered-text">No events attended or to attend yet.</h3>
+<% end %>

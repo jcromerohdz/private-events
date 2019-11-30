@@ -1,0 +1,12 @@
+<h2 class="centered-text">Welcome
+  <%= @user.name %></h2>
+<% if @user_events.any? %>
+  <h3 class="centered-text" >Events created by you:</h3>
+  <div class="attending-events-container">
+    <%= render partial: "events/event", object: @user.events, as: 'events' %>
+  </div>
+<% else %>
+  <h3 class="centered-text">You didn't create any events yet.</h3>
+<% end %>
+<%= render partial: 'events/upcoming_past',
+           locals: { upcoming: @upcoming_events, past: @past_events } %>

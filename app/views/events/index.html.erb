@@ -1,0 +1,9 @@
+<% provide(:title, 'Event List') %>
+
+<h2 class="centered-text">Browse All Events</h2>
+<% if @events.any? %>
+  <%= render partial: 'upcoming_past',
+         locals: { upcoming: @upcoming_events, past: @past_events } %>
+<% else %>
+  <h3 class="centered-text">No events created yet.</h3>
+<% end %>

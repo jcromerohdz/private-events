@@ -1,0 +1,34 @@
+<% provide(:title, 'Home') %>
+<section class="first-section">
+  <h1 class="centered-text">Welcome to Eventblitz</h1>
+  <div class="welcome-container">
+    <% if signed_in? %>
+      <div class="buttonme">
+        <a class="btn btn-lg btn-success" href="/events/new" role="button">Create an event</a>
+      </div>
+      <h3>
+        Hi there <%= @user.name %>,
+        <% if @upcoming_events.count > 0 || @user_events.any? %>
+          you have <%= @upcoming_events.count %> event(s) to attend.</h3>
+          <h4>Upcoming Event(s):</h4>
+          <div class="attending-events-container">
+            <%= render partial: "events/event", object: @upcoming_events, as: 'events' %>
+          </div>
+          <h4>Event(s) created by you:</h4>
+            <div class="attending-events-container">
+              <%= render partial: "events/event", object: @user.events, as: 'events' %>
+          </div>
+        <% else %>
+        <h3>you don't have any future events to attend to.</h3>
+        <% end %>
+    <% else %>
+      <div class="jumbotron">
+        <h1>Plan an Event</h1>
+        <p class="lead">Keep track of events with your friends.  This is a simple app to organize your event planning.
+           </p>
+        <a class="btn btn-lg btn-success" href="/events/new" role="button">Create an event</a>
+      </div>
+      <h3>Not a participant yet? <%= link_to "Join us", signup_path %> now!</h3>
+    <% end %>
+  </div>
+</section>

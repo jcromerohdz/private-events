@@ -1,0 +1,22 @@
+<h1><%= current_user.name %>
+<small><%= current_user.email %></small></h1>
+
+<%= link_to "Create New Event", new_event_path, class: "btn btn-lg btn-success" %> 
+<%
+=begin %>
+<%
+=end %>
+<% if @upcoming_events %>
+<h2>Upcoming:</h2>
+<%= render 'shared/table', object: @upcoming_events, as: 'events' %>
+<% end %>
+
+<% if @previous_events %>
+<h2>You Attended:</h2>
+<%= render 'shared/table', object: @previous_events, as: 'events' %>
+<% end %>
+
+<% if current_user.events.any? %>
+<h2>Your Created Events</h2>
+<%= render 'shared/table', object: current_user.events, as: 'events' %>
+<% end %>
