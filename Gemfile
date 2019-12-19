@@ -5,6 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.5'
 
+gem 'sassc', '~> 2.1.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.1'
 # Use sqlite3 as the database for Active Record
@@ -29,7 +30,7 @@ gem 'jbuilder', '~> 2.7'
 
 # Reduces boot times through caching; required in config/boot.rb
 
-gem 'bootsnap', '>= 1.4.2', require: false
+gem 'bootsnap', '~> 1.4', '>= 1.4.5', require: false
 gem 'bootstrap-sass', '~> 3.3', '>= 3.3.7'
 gem 'bootstrap-will_paginate', '1.0.0'
 gem 'bootstrap_form', '~> 4.3'
