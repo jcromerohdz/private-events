@@ -1,6 +1,10 @@
 # Microverse Project Title - Associations [Collaborative Project]
 Ruby on Rails
 
+## Screenshot
+
+![]()
+
 ### Introduction.
 In this project, you will build an application named Private Events and that behaves similar to Eventbrite. The main goal is to put in practice the main concepts of Associations in rails.
 
@@ -1865,6 +1869,10 @@ end
 
 10. Push to Github.
 
+### Future enhancement
+
+1. Email notification
+2. In app notification
 
 ### Source
 
